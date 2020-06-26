@@ -11,7 +11,7 @@ import (
 
 //Subjects is a struct for json
 type Subjects struct {
-	SubjectName string `json:"subjectname"`
+	SubjectName string `json:"subjectName"`
 }
 
 //SubjectsPage is a function to get data of Subject

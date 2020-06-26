@@ -11,8 +11,8 @@ import (
 
 //Students is a struct for json
 type Students struct {
-	FistName string `json:"firstname"`
-	LastName string `json:"lastname"`
+	FistName string `json:"firstName"`
+	LastName string `json:"lastName"`
 	Email    string `json:"email"`
 }
 
@@ -20,9 +20,7 @@ type Students struct {
 func StudentsPage(w http.ResponseWriter, r *http.Request) {
 	listStudents := getAllStudent()
 	byteOfStudents, err := json.Marshal(listStudents)
-	if err != nil {
-		log.Fatal(err)
-	}
+	errHandling(err)
 	w.Header().Set("Content-Type", "aplication/json")
 	w.Write(byteOfStudents)
 	fmt.Println("Endpoint Hit: StudentsPage")
