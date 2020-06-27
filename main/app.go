@@ -3,17 +3,19 @@ package main
 import (
 	"fmt"
 	"log"
-	"mySqlAPI/models/student"
-	"mySqlAPI/models/subject"
-	"mySqlAPI/models/teacher"
+	"mySqlAPI/config"
+	"mySqlAPI/models"
 	"net/http"
 )
 
 func main() {
+	var db = config.EnvConn()
+	ac := models.NewAppController(db)
 	//Endpoint
-	http.HandleFunc("/students", student.StudentsPage)
-	http.HandleFunc("/teachers", teacher.TeachersPage)
-	http.HandleFunc("/subjects", subject.SubjectsPage)
+	http.HandleFunc("/students", ac.StudentPage())
+	http.HandleFunc("/teachers", ac.TeacherPage())
+	// http.HandleFunc("/subjects", ac.models.SubjectsPage)
+	// http.HandleFunc("/studentByID", student.StudentsPageByID())
 
 	//Server
 	fmt.Println("Running On Port 3000")
