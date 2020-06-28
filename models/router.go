@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"mySqlAPI/models/student"
+	"mySqlAPI/models/subject"
 	"mySqlAPI/models/teacher"
 	"net/http"
 )
@@ -24,22 +25,7 @@ func (ac *AppController) TeacherPage() func(http.ResponseWriter, *http.Request) 
 
 //SubjectPage view teacher page
 func (ac *AppController) SubjectPage() func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// switch r.Method {
-		// case "GET":
-		// 	subjectsRaw := subject.GetAllSubject(ac.db)
-		// 	subjectsData, err := json.Marshal(subjectsRaw)
-		// 	errHandling(err)
-		// 	w.Header().Set("content-type", "application/json")
-		// 	w.Write([]byte(subjectsData))
-		// 	fmt.Println("Endpoint hit: GetSubjects")
-		// 	case "POST":
-		// 		var s domains.Subject
-		// 		json.NewDecoder(r.Body).Decode(&s)
-		// 		fmt.Println("Subject")
-		// 		fmt.Println(s)
-		// }
-	}
+	return subject.RouteSubject(ac.db)
 }
 
 //StudentPage view teacher page

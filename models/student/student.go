@@ -2,6 +2,7 @@ package student
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 )
 
@@ -13,8 +14,7 @@ type Students struct {
 	Email    string `json:"email"`
 }
 
-//GetAllStudent is get all student
-func GetAllStudent(db *sql.DB) []Students {
+func getAllStudent(db *sql.DB) []Students {
 	data, err := db.Query("SELECT id, first_name, last_name, email FROM students;")
 	errHandling(err)
 	defer data.Close()
@@ -29,6 +29,48 @@ func GetAllStudent(db *sql.DB) []Students {
 		log.Fatal(err)
 	}
 	return result
+}
+
+func studentByID(db *sql.DB, id string) Students {
+	var student = Students{}
+	err := db.QueryRow("SELECT id, first_name, last_name, email FROM students WHERE id = ?;", id).Scan(&student.ID, &student.FistName, &student.LastName, &student.Email)
+	errHandling(err)
+	return student
+}
+
+func insertStudent(db *sql.DB, id int, firstName, lastName, email string) {
+	tx, err := db.Begin()
+	errHandling(err)
+	fmt.Sprintf("%v", id)
+	_, err = tx.Exec("INSERT INTO students(first_name, last_name, email) VALUES(?, ?, ?)", firstName, lastName, email)
+	if err != nil {
+		tx.Rollback()
+		log.Fatal(err)
+	}
+	errHandling(tx.Commit())
+}
+
+func updateStudent(db *sql.DB, id int, firstName, lastName, email string) {
+	tx, err := db.Begin()
+	errHandling(err)
+	_, err = tx.Exec("UPDATE students set first_name = ?, last_name = ?, email = ? WHERE id = ?", firstName, lastName, email, id)
+	if err != nil {
+		tx.Rollback()
+		log.Fatal(err)
+	}
+	errHandling(tx.Commit())
+}
+func deleteStudent(db *sql.DB, id string) {
+	tx, err := db.Begin()
+	errHandling(err)
+
+	_, err = tx.Exec("DELETE FROM students WHERE id=?;", id)
+	if err != nil {
+		tx.Rollback()
+		log.Fatal(err)
+	}
+
+	errHandling(tx.Commit())
 }
 func errHandling(err error) {
 	if err != nil {

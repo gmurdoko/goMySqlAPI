@@ -2,6 +2,7 @@ package teacher
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 )
 
@@ -13,9 +14,7 @@ type Teachers struct {
 	Email    string `json:"email"`
 }
 
-//GetAllTeacher get all data teacher
-func GetAllTeacher(db *sql.DB) []Teachers {
-
+func getAllTeacher(db *sql.DB) []Teachers {
 	data, err := db.Query("SELECT id, first_name, last_name, email FROM teachers;")
 	errHandling(err)
 	defer data.Close()
@@ -30,6 +29,48 @@ func GetAllTeacher(db *sql.DB) []Teachers {
 		log.Fatal(err)
 	}
 	return result
+}
+
+func teacherByID(db *sql.DB, id string) Teachers {
+	var teacher = Teachers{}
+	err := db.QueryRow("SELECT id, first_name, last_name, email FROM teachers WHERE id = ?;", id).Scan(&teacher.ID, &teacher.FistName, &teacher.LastName, &teacher.Email)
+	errHandling(err)
+	return teacher
+}
+
+func insertTeacher(db *sql.DB, id int, firstName, lastName, email string) {
+	tx, err := db.Begin()
+	errHandling(err)
+	fmt.Sprintf("%v", id)
+	_, err = tx.Exec("INSERT INTO teachers(first_name, last_name, email) VALUES(?, ?, ?)", firstName, lastName, email)
+	if err != nil {
+		tx.Rollback()
+		log.Fatal(err)
+	}
+	errHandling(tx.Commit())
+}
+
+func updateTeacher(db *sql.DB, id int, firstName, lastName, email string) {
+	tx, err := db.Begin()
+	errHandling(err)
+	_, err = tx.Exec("UPDATE teachers set first_name = ?, last_name = ?, email = ? WHERE id = ?", firstName, lastName, email, id)
+	if err != nil {
+		tx.Rollback()
+		log.Fatal(err)
+	}
+	errHandling(tx.Commit())
+}
+func deleteTeacher(db *sql.DB, id string) {
+	tx, err := db.Begin()
+	errHandling(err)
+
+	_, err = tx.Exec("DELETE FROM teachers WHERE id=?;", id)
+	if err != nil {
+		tx.Rollback()
+		log.Fatal(err)
+	}
+
+	errHandling(tx.Commit())
 }
 func errHandling(err error) {
 	if err != nil {

@@ -14,8 +14,7 @@ func main() {
 	//Endpoint
 	http.HandleFunc("/students", ac.StudentPage())
 	http.HandleFunc("/teachers", ac.TeacherPage())
-	// http.HandleFunc("/subjects", ac.models.SubjectsPage)
-	// http.HandleFunc("/studentByID", student.StudentsPageByID())
+	http.HandleFunc("/subjects", ac.SubjectPage())
 
 	//Server
 	fmt.Println("Running On Port 3000")
