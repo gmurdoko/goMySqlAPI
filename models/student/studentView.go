@@ -54,7 +54,7 @@ func putStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	err := json.NewDecoder(r.Body).Decode(&inStudent)
 	ID := strconv.Itoa(inStudent.ID)
 	// isIDValid := validasiID(ID)
-	ide, isIDExist := validateStudentID(db, ID)
+	_, isIDExist := validateStudentID(db, ID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid ID"))
@@ -62,7 +62,7 @@ func putStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("ID didn't Exist"))
 	} else {
-		updateStudent(db, ide, inStudent.FistName, inStudent.LastName, inStudent.Email)
+		updateStudent(db, &inStudent)
 		studentResponse.Status = http.StatusOK
 		studentResponse.Message = "Put Success"
 		studentResponse.Data = ""
@@ -76,17 +76,22 @@ func putStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 func postStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var studentsResponse utils.Response
-	var inStudent Student
+	var inStudent Students
 	_ = json.NewDecoder(r.Body).Decode(&inStudent)
-	insertStudent(db, inStudent.FistName, inStudent.LastName, inStudent.Email)
-	studentsResponse.Status = http.StatusOK
-	studentsResponse.Message = "Post Success"
-	studentsResponse.Data = ""
-	w.Header().Set("content-type", "application/json")
-	byteOfStudent, err := json.Marshal(studentsResponse)
-	errHandling(err)
-	w.Write([]byte(byteOfStudent))
-	fmt.Println("Endpoint hit: PostStudent")
+	if inStudent.FistName == "" && inStudent.LastName == "" && inStudent.Email == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Can't Read Data or Empty"))
+	} else {
+		insertStudent(db, &inStudent)
+		studentsResponse.Status = http.StatusOK
+		studentsResponse.Message = "Post Success"
+		studentsResponse.Data = ""
+		w.Header().Set("content-type", "application/json")
+		byteOfStudent, err := json.Marshal(studentsResponse)
+		errHandling(err)
+		w.Write([]byte(byteOfStudent))
+		fmt.Println("Endpoint hit: PostStudent")
+	}
 }
 
 func delStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {

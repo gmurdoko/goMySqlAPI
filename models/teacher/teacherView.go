@@ -50,17 +50,22 @@ func getTeachers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 func postTeachers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var teachersResponse utils.Response
-	var inTeacher Teacher
+	var inTeacher Teachers
 	_ = json.NewDecoder(r.Body).Decode(&inTeacher)
-	insertTeacher(db, inTeacher.FistName, inTeacher.LastName, inTeacher.Email)
-	teachersResponse.Status = http.StatusOK
-	teachersResponse.Message = "Post Success"
-	teachersResponse.Data = ""
-	w.Header().Set("content-type", "application/json")
-	byteOfTeacher, err := json.Marshal(teachersResponse)
-	errHandling(err)
-	w.Write([]byte(byteOfTeacher))
-	fmt.Println("Endpoint hit: PostTeacher")
+	if inTeacher.FistName == "" && inTeacher.LastName == "" && inTeacher.Email == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Can't Read Data or Empty"))
+	} else {
+		insertTeacher(db, &inTeacher)
+		teachersResponse.Status = http.StatusOK
+		teachersResponse.Message = "Post Success"
+		teachersResponse.Data = ""
+		w.Header().Set("content-type", "application/json")
+		byteOfTeacher, err := json.Marshal(teachersResponse)
+		errHandling(err)
+		w.Write([]byte(byteOfTeacher))
+		fmt.Println("Endpoint hit: PostTeacher")
+	}
 }
 
 func putTeachers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -69,7 +74,7 @@ func putTeachers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	err := json.NewDecoder(r.Body).Decode(&inTeacher)
 	ID := strconv.Itoa(inTeacher.ID)
 	// isIDValid := validasiID(ID)
-	ide, isIDExist := validateTeacherID(db, ID)
+	_, isIDExist := validateTeacherID(db, ID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid ID"))
@@ -77,7 +82,7 @@ func putTeachers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("ID didn't Exist"))
 	} else {
-		updateTeacher(db, ide, inTeacher.FistName, inTeacher.LastName, inTeacher.Email)
+		updateTeacher(db, &inTeacher)
 		teachersResponse.Status = http.StatusOK
 		teachersResponse.Message = "Put Success"
 		teachersResponse.Data = ""

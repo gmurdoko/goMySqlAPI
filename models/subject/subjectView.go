@@ -50,17 +50,22 @@ func getSubjects(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 
 func postSubjects(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var subjectResponse utils.Response
-	var inSubject Subject
+	var inSubject Subjects
 	_ = json.NewDecoder(r.Body).Decode(&inSubject)
-	insertSubject(db, inSubject.SubjectName)
-	subjectResponse.Status = http.StatusOK
-	subjectResponse.Message = "Post Success"
-	subjectResponse.Data = ""
-	w.Header().Set("content-type", "application/json")
-	byteOfSubject, err := json.Marshal(subjectResponse)
-	errHandling(err)
-	w.Write([]byte(byteOfSubject))
-	fmt.Println("Endpoint hit: PostSubject")
+	if inSubject.SubjectName == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Can't Read Data or Empty"))
+	} else {
+		insertSubject(db, &inSubject)
+		subjectResponse.Status = http.StatusOK
+		subjectResponse.Message = "Post Success"
+		subjectResponse.Data = ""
+		w.Header().Set("content-type", "application/json")
+		byteOfSubject, err := json.Marshal(subjectResponse)
+		errHandling(err)
+		w.Write([]byte(byteOfSubject))
+		fmt.Println("Endpoint hit: PostSubject")
+	}
 }
 
 func putSubjects(w http.ResponseWriter, r *http.Request, db *sql.DB) {
@@ -69,7 +74,7 @@ func putSubjects(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	err := json.NewDecoder(r.Body).Decode(&inSubject)
 	ID := strconv.Itoa(inSubject.ID)
 	// isIDValid := validasiID(ID)
-	ide, isIDExist := validateSubjectID(db, ID)
+	_, isIDExist := validateSubjectID(db, ID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid ID"))
@@ -77,7 +82,7 @@ func putSubjects(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("ID didn't Exist"))
 	} else {
-		updateSubject(db, ide, inSubject.SubjectName)
+		updateSubject(db, &inSubject)
 		subjectResponse.Status = http.StatusOK
 		subjectResponse.Message = "Put Success"
 		subjectResponse.Data = ""

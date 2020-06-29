@@ -11,12 +11,6 @@ type Subjects struct {
 	SubjectName string `json:"subjectName"`
 }
 
-//Subject is a struct for json
-type Subject struct {
-	ID          int    `json:"id"`
-	SubjectName string `json:"subjectName"`
-}
-
 func getAllSubject(db *sql.DB) []Subjects {
 	data, err := db.Query("SELECT id, subject_name FROM subjects;")
 	errHandling(err)
@@ -41,11 +35,11 @@ func subjectByID(db *sql.DB, id string) Subjects {
 	return subject
 }
 
-func insertSubject(db *sql.DB, subjectName string) {
+func insertSubject(db *sql.DB, inSubject *Subjects) {
 	tx, err := db.Begin()
 	errHandling(err)
 	// fmt.Sprintf("%v", id)
-	_, err = tx.Exec("INSERT INTO subjects(subject_name) VALUES(?)", subjectName)
+	_, err = tx.Exec("INSERT INTO subjects(subject_name) VALUES(?)", inSubject.SubjectName)
 	if err != nil {
 		tx.Rollback()
 		log.Fatal(err)
@@ -53,10 +47,10 @@ func insertSubject(db *sql.DB, subjectName string) {
 	errHandling(tx.Commit())
 }
 
-func updateSubject(db *sql.DB, id, subjectName string) {
+func updateSubject(db *sql.DB, inSubject *Subjects) {
 	tx, err := db.Begin()
 	errHandling(err)
-	_, err = tx.Exec("UPDATE subjects set subject_name = ? WHERE id = ?", subjectName, id)
+	_, err = tx.Exec("UPDATE subjects set subject_name = ? WHERE id = ?", inSubject.SubjectName, inSubject.ID)
 	if err != nil {
 		tx.Rollback()
 		log.Fatal(err)

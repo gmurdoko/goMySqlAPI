@@ -13,13 +13,6 @@ type Teachers struct {
 	Email    string `json:"email"`
 }
 
-//Teacher is a struct for json
-type Teacher struct {
-	FistName string `json:"firstName"`
-	LastName string `json:"lastName"`
-	Email    string `json:"email"`
-}
-
 func getAllTeacher(db *sql.DB) []Teachers {
 	data, err := db.Query("SELECT id, first_name, last_name, email FROM teachers;")
 	errHandling(err)
@@ -44,11 +37,11 @@ func teacherByID(db *sql.DB, id string) Teachers {
 	return teacher
 }
 
-func insertTeacher(db *sql.DB, firstName, lastName, email string) {
+func insertTeacher(db *sql.DB, inTeacher *Teachers) {
 	tx, err := db.Begin()
 	errHandling(err)
 	// fmt.Sprintf("%v", id)
-	_, err = tx.Exec("INSERT INTO teachers(first_name, last_name, email) VALUES(?, ?, ?)", firstName, lastName, email)
+	_, err = tx.Exec("INSERT INTO teachers(first_name, last_name, email) VALUES(?, ?, ?)", inTeacher.FistName, inTeacher.LastName, inTeacher.Email)
 	if err != nil {
 		tx.Rollback()
 		log.Fatal(err)
@@ -56,10 +49,10 @@ func insertTeacher(db *sql.DB, firstName, lastName, email string) {
 	errHandling(tx.Commit())
 }
 
-func updateTeacher(db *sql.DB, id, firstName, lastName, email string) {
+func updateTeacher(db *sql.DB, inTeacher *Teachers) {
 	tx, err := db.Begin()
 	errHandling(err)
-	_, err = tx.Exec("UPDATE teachers set first_name = ?, last_name = ?, email = ? WHERE id = ?", firstName, lastName, email, id)
+	_, err = tx.Exec("UPDATE teachers set first_name = ?, last_name = ?, email = ? WHERE id = ?", inTeacher.FistName, inTeacher.LastName, inTeacher.Email, inTeacher.ID)
 	if err != nil {
 		tx.Rollback()
 		log.Fatal(err)
