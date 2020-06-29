@@ -1,14 +1,16 @@
-package main
+package router
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
+	"mySqlAPI/config"
 	"mySqlAPI/models"
 	"net/http"
 )
 
-func appRouter(db *sql.DB) {
+//AppRouters is router for app.go
+func AppRouters() {
+	var db = config.EnvConn()
 	mr := models.NewModelRouter(db)
 	//Endpoint
 	http.HandleFunc("/students", mr.StudentPage())

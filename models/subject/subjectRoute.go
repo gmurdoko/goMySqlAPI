@@ -32,14 +32,3 @@ func validasiID(ID string) (status bool) {
 	}
 	return status
 }
-
-func searchByID(db *sql.DB, id string) (iid string, status bool) {
-	err := db.QueryRow("SELECT id FROM subjects WHERE id = ?;", id).Scan(&iid)
-	if err != nil {
-		status = false
-		return id, status
-	}
-	status = true
-	return iid, status
-
-}

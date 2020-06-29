@@ -37,7 +37,7 @@ func getAllStudent(db *sql.DB) []Students {
 	return result
 }
 
-func studentByID(db *sql.DB, id string) Students {
+func getStudentByID(db *sql.DB, id string) Students {
 	var student = Students{}
 	err := db.QueryRow("SELECT id, first_name, last_name, email FROM students WHERE id = ?;", id).Scan(&student.ID, &student.FistName, &student.LastName, &student.Email)
 	errHandling(err)

@@ -16,7 +16,7 @@ func getStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		idMap := ID["id"]
 		idIsi := idMap[0]
 		isIDValid := validasiID(idIsi)
-		ide, isIDExist := searchByID(db, idIsi)
+		ide, isIDExist := validateStudentID(db, idIsi)
 		if !isIDValid {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Invalid ID"))
@@ -24,7 +24,7 @@ func getStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("ID didn't Exist"))
 		} else {
-			studentData := studentByID(db, ide)
+			studentData := getStudentByID(db, ide)
 			studentsResponse.Status = http.StatusOK
 			studentsResponse.Message = "Get ID Success!"
 			studentsResponse.Data = studentData
@@ -54,7 +54,7 @@ func putStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	err := json.NewDecoder(r.Body).Decode(&inStudent)
 	ID := strconv.Itoa(inStudent.ID)
 	// isIDValid := validasiID(ID)
-	ide, isIDExist := searchByID(db, ID)
+	ide, isIDExist := validateStudentID(db, ID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid ID"))
@@ -93,7 +93,7 @@ func delStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var studentResponse utils.Response
 	ID := r.FormValue("id")
 	isIDValid := validasiID(ID)
-	ide, isIDExist := searchByID(db, ID)
+	ide, isIDExist := validateStudentID(db, ID)
 	if !isIDValid {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid ID"))
@@ -111,4 +111,15 @@ func delStudents(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.Write([]byte(byteOfStudent))
 		fmt.Println("Endpoint hit: DeleteStudent")
 	}
+}
+
+func validateStudentID(db *sql.DB, id string) (iid string, status bool) {
+	err := db.QueryRow("SELECT id FROM students WHERE id = ?;", id).Scan(&iid)
+	if err != nil {
+		status = false
+		return id, status
+	}
+	status = true
+	return iid, status
+
 }

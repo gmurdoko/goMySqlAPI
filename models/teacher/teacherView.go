@@ -16,7 +16,7 @@ func getTeachers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		idMap := ID["id"]
 		idIsi := idMap[0]
 		isIDValid := validasiID(idIsi)
-		ide, isIDExist := searchByID(db, idIsi)
+		ide, isIDExist := validateTeacherID(db, idIsi)
 		if !isIDValid {
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("Invalid ID"))
@@ -69,7 +69,7 @@ func putTeachers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	err := json.NewDecoder(r.Body).Decode(&inTeacher)
 	ID := strconv.Itoa(inTeacher.ID)
 	// isIDValid := validasiID(ID)
-	ide, isIDExist := searchByID(db, ID)
+	ide, isIDExist := validateTeacherID(db, ID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid ID"))
@@ -93,7 +93,7 @@ func delTeachers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 	var teachersResponse utils.Response
 	ID := r.FormValue("id")
 	isIDValid := validasiID(ID)
-	ide, isIDExist := searchByID(db, ID)
+	ide, isIDExist := validateTeacherID(db, ID)
 	if !isIDValid {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Invalid ID"))
@@ -111,4 +111,15 @@ func delTeachers(w http.ResponseWriter, r *http.Request, db *sql.DB) {
 		w.Write([]byte(byteOfTeacher))
 		fmt.Println("Endpoint hit: DeleteTeacher")
 	}
+}
+
+func validateTeacherID(db *sql.DB, id string) (iid string, status bool) {
+	err := db.QueryRow("SELECT id FROM teachers WHERE id = ?;", id).Scan(&iid)
+	if err != nil {
+		status = false
+		return id, status
+	}
+	status = true
+	return iid, status
+
 }

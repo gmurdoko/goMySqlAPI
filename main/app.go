@@ -1,11 +1,9 @@
 package main
 
-import (
-	"mySqlAPI/config"
-)
+import "mySqlAPI/router"
 
 func main() {
-	var db = config.EnvConn()
-	appRouter(db)
+
+	router.AppRouters()
 
 }
