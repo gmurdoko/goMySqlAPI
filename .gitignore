@@ -1,1 +1,2 @@
-.env
+#Conn DB Config for viper 
+*.env
