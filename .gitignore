@@ -1,2 +1,4 @@
 #Conn DB Config for viper 
 *.env
+*.sql
+README.txt
