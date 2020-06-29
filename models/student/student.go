@@ -2,13 +2,19 @@ package student
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 )
 
 //Students is a struct for json
 type Students struct {
 	ID       int    `json:"id"`
+	FistName string `json:"firstName"`
+	LastName string `json:"lastName"`
+	Email    string `json:"email"`
+}
+
+//Student is a struct for json
+type Student struct {
 	FistName string `json:"firstName"`
 	LastName string `json:"lastName"`
 	Email    string `json:"email"`
@@ -38,10 +44,10 @@ func studentByID(db *sql.DB, id string) Students {
 	return student
 }
 
-func insertStudent(db *sql.DB, id int, firstName, lastName, email string) {
+func insertStudent(db *sql.DB, firstName, lastName, email string) {
 	tx, err := db.Begin()
 	errHandling(err)
-	fmt.Sprintf("%v", id)
+	// fmt.Sprintf("%v", id)
 	_, err = tx.Exec("INSERT INTO students(first_name, last_name, email) VALUES(?, ?, ?)", firstName, lastName, email)
 	if err != nil {
 		tx.Rollback()
@@ -50,7 +56,7 @@ func insertStudent(db *sql.DB, id int, firstName, lastName, email string) {
 	errHandling(tx.Commit())
 }
 
-func updateStudent(db *sql.DB, id int, firstName, lastName, email string) {
+func updateStudent(db *sql.DB, id, firstName, lastName, email string) {
 	tx, err := db.Begin()
 	errHandling(err)
 	_, err = tx.Exec("UPDATE students set first_name = ?, last_name = ?, email = ? WHERE id = ?", firstName, lastName, email, id)

@@ -2,12 +2,17 @@ package subject
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 )
 
 //Subjects is a struct for json
 type Subjects struct {
+	ID          int    `json:"id"`
+	SubjectName string `json:"subjectName"`
+}
+
+//Subject is a struct for json
+type Subject struct {
 	ID          int    `json:"id"`
 	SubjectName string `json:"subjectName"`
 }
@@ -36,10 +41,10 @@ func subjectByID(db *sql.DB, id string) Subjects {
 	return subject
 }
 
-func insertSubject(db *sql.DB, id int, subjectName string) {
+func insertSubject(db *sql.DB, subjectName string) {
 	tx, err := db.Begin()
 	errHandling(err)
-	fmt.Sprintf("%v", id)
+	// fmt.Sprintf("%v", id)
 	_, err = tx.Exec("INSERT INTO subjects(subject_name) VALUES(?)", subjectName)
 	if err != nil {
 		tx.Rollback()
@@ -48,7 +53,7 @@ func insertSubject(db *sql.DB, id int, subjectName string) {
 	errHandling(tx.Commit())
 }
 
-func updateSubject(db *sql.DB, id int, subjectName string) {
+func updateSubject(db *sql.DB, id, subjectName string) {
 	tx, err := db.Begin()
 	errHandling(err)
 	_, err = tx.Exec("UPDATE subjects set subject_name = ? WHERE id = ?", subjectName, id)

@@ -2,13 +2,19 @@ package teacher
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 )
 
 //Teachers is a struct for json
 type Teachers struct {
 	ID       int    `json:"id"`
+	FistName string `json:"firstName"`
+	LastName string `json:"lastName"`
+	Email    string `json:"email"`
+}
+
+//Teacher is a struct for json
+type Teacher struct {
 	FistName string `json:"firstName"`
 	LastName string `json:"lastName"`
 	Email    string `json:"email"`
@@ -38,10 +44,10 @@ func teacherByID(db *sql.DB, id string) Teachers {
 	return teacher
 }
 
-func insertTeacher(db *sql.DB, id int, firstName, lastName, email string) {
+func insertTeacher(db *sql.DB, firstName, lastName, email string) {
 	tx, err := db.Begin()
 	errHandling(err)
-	fmt.Sprintf("%v", id)
+	// fmt.Sprintf("%v", id)
 	_, err = tx.Exec("INSERT INTO teachers(first_name, last_name, email) VALUES(?, ?, ?)", firstName, lastName, email)
 	if err != nil {
 		tx.Rollback()
@@ -50,7 +56,7 @@ func insertTeacher(db *sql.DB, id int, firstName, lastName, email string) {
 	errHandling(tx.Commit())
 }
 
-func updateTeacher(db *sql.DB, id int, firstName, lastName, email string) {
+func updateTeacher(db *sql.DB, id, firstName, lastName, email string) {
 	tx, err := db.Begin()
 	errHandling(err)
 	_, err = tx.Exec("UPDATE teachers set first_name = ?, last_name = ?, email = ? WHERE id = ?", firstName, lastName, email, id)
