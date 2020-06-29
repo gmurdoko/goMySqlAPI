@@ -18,17 +18,17 @@ func NewModelRouter(db *sql.DB) *ModelRouter {
 	return &ModelRouter{db: db}
 }
 
-//TeacherPage view teacher page
+//TeacherPage function receiver for NewModelRouter
 func (mr *ModelRouter) TeacherPage() func(http.ResponseWriter, *http.Request) {
 	return teacher.RouteTeacher(mr.db)
 }
 
-//SubjectPage view teacher page
+//SubjectPage view teacher pagefunction receiver for NewModelRouter
 func (mr *ModelRouter) SubjectPage() func(http.ResponseWriter, *http.Request) {
 	return subject.RouteSubject(mr.db)
 }
 
-//StudentPage view teacher page
+//StudentPage function receiver for NewModelRouter
 func (mr *ModelRouter) StudentPage() func(http.ResponseWriter, *http.Request) {
 	return student.RouteStudent(mr.db)
 }

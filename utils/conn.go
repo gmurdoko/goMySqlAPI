@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 
+	//package for DB connection using mysql
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -16,7 +17,7 @@ func connCheck(db *sql.DB) (*sql.DB, error) {
 	return db, err
 }
 
-//ConnDB receiving data for data connection
+//ConnDB Connecting app to DB using variabel from EnvConn
 func ConnDB(DbEngine, DbSource string) (db *sql.DB, err error) {
 	db, _ = sql.Open(DbEngine, DbSource)
 	db, err = connCheck(db)

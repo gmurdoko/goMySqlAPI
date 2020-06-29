@@ -8,8 +8,8 @@ import (
 	"net/http"
 )
 
-//AppRouters is router for app.go
-func AppRouters() {
+//AppRouter is function to route app.go
+func AppRouter() {
 	var db = config.EnvConn()
 	mr := models.NewModelRouter(db)
 	//Endpoint

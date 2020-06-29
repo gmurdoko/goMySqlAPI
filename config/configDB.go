@@ -8,7 +8,6 @@ import (
 )
 
 var (
-	//DbEngine,
 	dbUser,
 	dbPassword,
 	dbHost,
@@ -16,7 +15,7 @@ var (
 	dbSchema string
 )
 
-//EnvConn is Envconnection to db
+//EnvConn is function to get Environment Variabel for DB connection
 func EnvConn() *sql.DB {
 	dbEngine := utils.ViperGetEnv("DB_ENGINE", "mysql") //mysql
 	dbUser = utils.ViperGetEnv("DB_USER", "root")       //root

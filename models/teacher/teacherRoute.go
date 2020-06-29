@@ -6,7 +6,7 @@ import (
 	"regexp"
 )
 
-// RouteTeacher routin;g for teachers
+// RouteTeacher routing for model teacher
 func RouteTeacher(db *sql.DB) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
